@@ -190,41 +190,41 @@
     <div class="top-bar">
       <div class="lang-switcher">
         <select id="langSelect" onchange="changeLanguage(this.value)">
-          <option value="vi">Tiếng Việt</option>
-          <option value="zh-TW">繁體中文</option>
+          <option value="zh-TW" selected>繁體中文</option>
           <option value="zh-CN">简体中文</option>
+          <option value="vi">Tiếng Việt</option>
           <option value="en">English</option>
           <option value="ja">日本語</option>
         </select>
       </div>
-      <button class="refresh-btn" onclick="loadMessages()">🔄 <span id="ui-refresh">Làm mới</span></button>
+      <button class="refresh-btn" onclick="loadMessages()">🔄 <span id="ui-refresh">重新整理</span></button>
     </div>
 
     <div class="header-box">
       <div class="chibi-avatar">🐥✨</div>
-      <h1 id="ui-title">Lưu Bút Chibi</h1>
-      <p id="ui-subtitle">Gửi lại lời nhắn ngọt ngào cho tớ nhé!</p>
+      <h1 id="ui-title">Q版可愛留言板</h1>
+      <p id="ui-subtitle">留下你溫馨可愛的留言吧！</p>
     </div>
 
     <div class="form-card">
       <form id="msgForm">
         <div class="form-group">
-          <label for="name" id="ui-label-name">🐱 Tên của bạn:</label>
-          <input type="text" id="name" required placeholder="Nhập biệt danh cute...">
+          <label for="name" id="ui-label-name">🐱 你的暱稱：</label>
+          <input type="text" id="name" required placeholder="請輸入超萌暱稱...">
         </div>
         
         <div class="form-group">
-          <label id="ui-label-tag">🏷️ Loại lời nhắn:</label>
+          <label id="ui-label-tag">🏷️ 留言類別：</label>
           <select id="tag">
-            <option value="🎉 Chúc mừng" id="opt-tag-1">🎉 Chúc mừng</option>
-            <option value="☕ Tâm sự" id="opt-tag-2">☕ Tâm sự</option>
-            <option value="💌 Tỏ tình" id="opt-tag-3">💌 Tỏ tình</option>
-            <option value="👭 Bạn bè" id="opt-tag-4">👭 Bạn bè</option>
+            <option value="🎉 祝福" id="opt-tag-1">🎉 祝福</option>
+            <option value="☕ 心聲" id="opt-tag-2">☕ 心聲</option>
+            <option value="💌 告白" id="opt-tag-3">💌 告白</option>
+            <option value="👭 好友" id="opt-tag-4">👭 好友</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label for="message" id="ui-label-msg">💌 Lời nhắn gửi:</label>
+          <label for="message" id="ui-label-msg">💌 留言內容：</label>
           <div class="emoji-bar">
             <span class="emoji-btn" onclick="addEmoji('❤️')">❤️</span>
             <span class="emoji-btn" onclick="addEmoji('✨')">✨</span>
@@ -233,11 +233,11 @@
             <span class="emoji-btn" onclick="addEmoji('🧸')">🧸</span>
             <span class="emoji-btn" onclick="addEmoji('🎉')">🎉</span>
           </div>
-          <textarea id="message" rows="3" required placeholder="Viết gì đó dễ thương..."></textarea>
+          <textarea id="message" rows="3" required placeholder="寫點可愛的話吧..."></textarea>
         </div>
 
         <div class="form-group">
-          <label id="ui-label-theme">🎨 Màu thiệp:</label>
+          <label id="ui-label-theme">🎨 卡片顏色：</label>
           <div class="theme-picker">
             <div class="theme-opt active" style="background:#ffe066" onclick="selectTheme('theme-yellow', this)"></div>
             <div class="theme-opt" style="background:#faa2c1" onclick="selectTheme('theme-pink', this)"></div>
@@ -246,17 +246,17 @@
           </div>
         </div>
 
-        <button type="submit" id="submitBtn" class="submit-btn">Gửi Đi Ngay 🚀</button>
+        <button type="submit" id="submitBtn" class="submit-btn">獨立送出 🚀</button>
       </form>
     </div>
 
-    <div class="section-title" id="ui-section-title">✨ Danh Sách Lời Nhắn ✨</div>
+    <div class="section-title" id="ui-section-title">✨ 歷史留言區 ✨</div>
     
     <div class="search-box">
-      <input type="text" id="searchInput" oninput="filterMessages()" placeholder="🔍 Tìm kiếm lời nhắn...">
+      <input type="text" id="searchInput" oninput="filterMessages()" placeholder="🔍 搜尋留言...">
     </div>
 
-    <div id="list"><div class="status-msg" id="ui-loading">Đang tải tin nhắn... 🐾</div></div>
+    <div id="list"><div class="status-msg" id="ui-loading">留言載入中... 🐾</div></div>
   </div>
 
   <script>
@@ -264,20 +264,8 @@
     const avatars = ["🐱", "🐶", "🐰", "🦊", "🐻", "🐼", "🐨", "🐥"];
     let selectedTheme = 'theme-yellow';
     let allMessages = [];
-    let likesData = {};
 
-    // Sửa đầy đủ ngôn ngữ cho Tiếng Trung Giản Thể & Tiếng Nhật
     const i18n = {
-      'vi': {
-        title: 'Lưu Bút Chibi Cute', subtitle: 'Gửi lại lời nhắn ngọt ngào cho tớ nhé!',
-        labelName: '🐱 Tên của bạn:', placeholderName: 'Nhập biệt danh cute...',
-        labelMsg: '💌 Lời nhắn gửi:', placeholderMsg: 'Viết gì đó dễ thương...',
-        submitBtn: 'Gửi Đi Ngay 🚀', submitting: '⏳ Đang Gửi Tin...',
-        sectionTitle: '✨ Danh Sách Lời Nhắn ✨', loading: 'Đang tải tin nhắn... 🐾',
-        empty: 'Chưa có lời nhắn nào cả! 🐣', error: '❌ Lỗi tải dữ liệu!', refresh: 'Làm mới',
-        search: '🔍 Tìm kiếm lời nhắn...', labelTag: '🏷️ Loại lời nhắn:', labelTheme: '🎨 Màu thiệp:',
-        tags: ['🎉 Chúc mừng', '☕ Tâm sự', '💌 Tỏ tình', '👭 Bạn bè']
-      },
       'zh-TW': {
         title: 'Q版可愛留言板', subtitle: '留下你溫馨可愛的留言吧！',
         labelName: '🐱 你的暱稱：', placeholderName: '請輸入超萌暱稱...',
@@ -297,6 +285,16 @@
         empty: '目前还没有留言！ 🐣', error: '❌ 读取失败！', refresh: '刷新',
         search: '🔍 搜索留言...', labelTag: '🏷️ 留言类别：', labelTheme: '🎨 卡片颜色：',
         tags: ['🎉 祝福', '☕ 心声', '💌 告白', '👭 好友']
+      },
+      'vi': {
+        title: 'Lưu Bút Chibi Cute', subtitle: 'Gửi lại lời nhắn ngọt ngào cho tớ nhé!',
+        labelName: '🐱 Tên của bạn:', placeholderName: 'Nhập biệt danh cute...',
+        labelMsg: '💌 Lời nhắn gửi:', placeholderMsg: 'Viết gì đó dễ thương...',
+        submitBtn: 'Gửi Đi Ngay 🚀', submitting: '⏳ Đang Gửi Tin...',
+        sectionTitle: '✨ Danh Sách Lời Nhắn ✨', loading: 'Đang tải tin nhắn... 🐾',
+        empty: 'Chưa có lời nhắn nào cả! 🐣', error: '❌ Lỗi tải dữ liệu!', refresh: 'Làm mới',
+        search: '🔍 Tìm kiếm lời nhắn...', labelTag: '🏷️ Loại lời nhắn:', labelTheme: '🎨 Màu thiệp:',
+        tags: ['🎉 Chúc mừng', '☕ Tâm sự', '💌 Tỏ tình', '👭 Bạn bè']
       },
       'ja': {
         title: 'ちび一言掲示板', subtitle: 'メッセージを残していってね！',
@@ -320,11 +318,12 @@
       }
     };
 
-    let currentLang = 'vi';
+    // Đặt ngôn ngữ mặc định ban đầu là Tiếng Trung Phồn Thể ('zh-TW')
+    let currentLang = 'zh-TW';
 
     function changeLanguage(lang) {
       currentLang = lang;
-      const t = i18n[lang] || i18n['vi'];
+      const t = i18n[lang] || i18n['zh-TW'];
       document.getElementById('ui-title').innerText = t.title;
       document.getElementById('ui-subtitle').innerText = t.subtitle;
       document.getElementById('ui-label-name').innerText = t.labelName;
@@ -338,7 +337,6 @@
       document.getElementById('ui-label-tag').innerText = t.labelTag;
       document.getElementById('ui-label-theme').innerText = t.labelTheme;
       
-      // Đổi ngôn ngữ cho các Option trong thẻ Tag
       for(let i = 0; i < 4; i++) {
         const opt = document.getElementById(`opt-tag-${i+1}`);
         if(opt) {
@@ -366,12 +364,10 @@
       return avatars[hash % avatars.length];
     }
 
-    // Tải danh sách - Tự giữ lại kết quả tìm kiếm nếu đang tìm
     async function loadMessages() {
       const listDiv = document.getElementById("list");
-      const t = i18n[currentLang] || i18n['vi'];
+      const t = i18n[currentLang] || i18n['zh-TW'];
       
-      // Nếu không có tìm kiếm thì mới hiện trạng thái loading
       if (!document.getElementById('searchInput').value.trim()) {
         listDiv.innerHTML = `<div class="status-msg">${t.loading}</div>`;
       }
@@ -380,7 +376,7 @@
         const res = await fetch(GAS_URL);
         const data = await res.json();
         allMessages = data || [];
-        filterMessages(); // Giữ nguyên bộ lọc sau khi làm mới
+        filterMessages();
       } catch (e) {
         listDiv.innerHTML = `<div class="status-msg" style="color: #e03131;">${t.error}</div>`;
       }
@@ -388,17 +384,17 @@
 
     function renderMessages(data) {
       const listDiv = document.getElementById("list");
-      const t = i18n[currentLang] || i18n['vi'];
+      const t = i18n[currentLang] || i18n['zh-TW'];
 
       if (!data || !data.length) {
         listDiv.innerHTML = `<div class="status-msg">${t.empty}</div>`;
         return;
       }
 
-      listDiv.innerHTML = data.map((item, idx) => {
+      listDiv.innerHTML = data.map((item) => {
         const theme = item.theme || 'theme-yellow';
         const tag = item.tag ? `<span class="msg-badge">${escapeHtml(item.tag)}</span>` : '';
-        const likes = likesData[idx] || 0;
+        const likes = item.likes || 0;
 
         return `
           <div class="msg-card ${theme}">
@@ -409,14 +405,13 @@
             ${tag}
             <div class="msg-content">${escapeHtml(item.message)}</div>
             <div class="msg-footer">
-              <button class="like-btn" onclick="addLike(${idx})">❤️ ${likes}</button>
+              <button class="like-btn" onclick="addLike(${item.id}, this)">❤️ <span>${likes}</span></button>
             </div>
           </div>
         `;
       }).join('');
     }
 
-    // Lọc tin nhắn từ danh sách gốc
     function filterMessages() {
       const q = document.getElementById('searchInput').value.toLowerCase().trim();
       if (!q) {
@@ -431,9 +426,23 @@
       renderMessages(filtered);
     }
 
-    function addLike(idx) {
-      likesData[idx] = (likesData[idx] || 0) + 1;
-      filterMessages();
+    async function addLike(id, btnElement) {
+      const span = btnElement.querySelector('span');
+      let currentLikes = parseInt(span.innerText) || 0;
+      span.innerText = currentLikes + 1;
+
+      const target = allMessages.find(m => m.id === id);
+      if(target) target.likes = currentLikes + 1;
+
+      try {
+        await fetch(GAS_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "like", id: id })
+        });
+      } catch (e) {
+        console.error("Lỗi thả tim:", e);
+      }
     }
 
     document.getElementById("msgForm").addEventListener("submit", async function(e) {
@@ -442,7 +451,7 @@
       const name = document.getElementById("name").value.trim();
       const message = document.getElementById("message").value.trim();
       const tag = document.getElementById("tag").value;
-      const t = i18n[currentLang] || i18n['vi'];
+      const t = i18n[currentLang] || i18n['zh-TW'];
 
       if(!name || !message) return;
 
@@ -473,6 +482,8 @@
       return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
     }
 
+    // Tự động khởi tạo ngôn ngữ ban đầu
+    changeLanguage(currentLang);
     loadMessages();
   </script>
 </body>
