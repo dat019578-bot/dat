@@ -4,8 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Q版可愛留言板 💛</title>
-  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
-  <!-- Thư viện tạo hiệu ứng pháo hoa Confetti -->
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;700&family=Noto+Sans+JP:wght@500;700&family=Noto+Sans+SC:wght@500;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   
   <style>
@@ -21,7 +20,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Noto Sans TC', 'Comfortaa', sans-serif;
+      font-family: 'Noto Sans TC', 'Noto Sans SC', 'Noto Sans JP', 'Comfortaa', sans-serif;
       background-color: var(--bg-yellow);
       background-image: radial-gradient(#fcc419 1.5px, transparent 1.5px), radial-gradient(#fcc419 1.5px, #fff9db 1.5px);
       background-size: 60px 60px;
@@ -108,7 +107,6 @@
     }
     .emoji-btn:hover { transform: scale(1.2); }
 
-    /* Lựa chọn màu theme */
     .theme-picker { display: flex; gap: 8px; margin-top: 5px; }
     .theme-opt {
       width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
@@ -138,7 +136,6 @@
 
     .section-title { font-size: 1.2rem; font-weight: 900; color: #d97706; margin-bottom: 12px; text-align: center; }
 
-    /* Theme Khung Tin Nhắn */
     .msg-card {
       border-radius: 20px;
       padding: 18px;
@@ -219,10 +216,10 @@
         <div class="form-group">
           <label id="ui-label-tag">🏷️ Loại lời nhắn:</label>
           <select id="tag">
-            <option value="🎉 Chúc mừng">🎉 Chúc mừng</option>
-            <option value="☕ Tâm sự">☕ Tâm sự</option>
-            <option value="💌 Tỏ tình">💌 Tỏ tình</option>
-            <option value="👭 Bạn bè">👭 Bạn bè</option>
+            <option value="🎉 Chúc mừng" id="opt-tag-1">🎉 Chúc mừng</option>
+            <option value="☕ Tâm sự" id="opt-tag-2">☕ Tâm sự</option>
+            <option value="💌 Tỏ tình" id="opt-tag-3">💌 Tỏ tình</option>
+            <option value="👭 Bạn bè" id="opt-tag-4">👭 Bạn bè</option>
           </select>
         </div>
 
@@ -255,7 +252,6 @@
 
     <div class="section-title" id="ui-section-title">✨ Danh Sách Lời Nhắn ✨</div>
     
-    <!-- Ô Tìm Kiếm -->
     <div class="search-box">
       <input type="text" id="searchInput" oninput="filterMessages()" placeholder="🔍 Tìm kiếm lời nhắn...">
     </div>
@@ -270,6 +266,7 @@
     let allMessages = [];
     let likesData = {};
 
+    // Sửa đầy đủ ngôn ngữ cho Tiếng Trung Giản Thể & Tiếng Nhật
     const i18n = {
       'vi': {
         title: 'Lưu Bút Chibi Cute', subtitle: 'Gửi lại lời nhắn ngọt ngào cho tớ nhé!',
@@ -278,7 +275,8 @@
         submitBtn: 'Gửi Đi Ngay 🚀', submitting: '⏳ Đang Gửi Tin...',
         sectionTitle: '✨ Danh Sách Lời Nhắn ✨', loading: 'Đang tải tin nhắn... 🐾',
         empty: 'Chưa có lời nhắn nào cả! 🐣', error: '❌ Lỗi tải dữ liệu!', refresh: 'Làm mới',
-        search: '🔍 Tìm kiếm lời nhắn...', labelTag: '🏷️ Loại lời nhắn:', labelTheme: '🎨 Màu thiệp:'
+        search: '🔍 Tìm kiếm lời nhắn...', labelTag: '🏷️ Loại lời nhắn:', labelTheme: '🎨 Màu thiệp:',
+        tags: ['🎉 Chúc mừng', '☕ Tâm sự', '💌 Tỏ tình', '👭 Bạn bè']
       },
       'zh-TW': {
         title: 'Q版可愛留言板', subtitle: '留下你溫馨可愛的留言吧！',
@@ -287,7 +285,28 @@
         submitBtn: '立即送出 🚀', submitting: '⏳ 傳送中...',
         sectionTitle: '✨ 歷史留言區 ✨', loading: '留言載入中... 🐾',
         empty: '目前還沒有留言！ 🐣', error: '❌ 讀取失敗！', refresh: '重新整理',
-        search: '🔍 搜尋留言...', labelTag: '🏷️ 留言類別：', labelTheme: '🎨 卡片顏色：'
+        search: '🔍 搜尋留言...', labelTag: '🏷️ 留言類別：', labelTheme: '🎨 卡片顏色：',
+        tags: ['🎉 祝福', '☕ 心聲', '💌 告白', '👭 好友']
+      },
+      'zh-CN': {
+        title: 'Q版可爱留言板', subtitle: '留下你温馨可爱的留言吧！',
+        labelName: '🐱 你的昵称：', placeholderName: '请输入萌萌的昵称...',
+        labelMsg: '💌 留言内容：', placeholderMsg: '写点可爱的话吧...',
+        submitBtn: '立即发送 🚀', submitting: '⏳ 发送中...',
+        sectionTitle: '✨ 历史留言区 ✨', loading: '留言加载中... 🐾',
+        empty: '目前还没有留言！ 🐣', error: '❌ 读取失败！', refresh: '刷新',
+        search: '🔍 搜索留言...', labelTag: '🏷️ 留言类别：', labelTheme: '🎨 卡片颜色：',
+        tags: ['🎉 祝福', '☕ 心声', '💌 告白', '👭 好友']
+      },
+      'ja': {
+        title: 'ちび一言掲示板', subtitle: 'メッセージを残していってね！',
+        labelName: '🐱 お名前：', placeholderName: '名前を入力...',
+        labelMsg: '💌 メッセージ：', placeholderMsg: '書いてね...',
+        submitBtn: '送信する 🚀', submitting: '⏳ 送信中...',
+        sectionTitle: '✨ メッセージ一覧 ✨', loading: '読み込み中... 🐾',
+        empty: 'まだメッセージがありません！ 🐣', error: '❌ エラーが発生しました！', refresh: '更新',
+        search: '🔍 メッセージを検索...', labelTag: '🏷️ カテゴリー：', labelTheme: '🎨 カードの色：',
+        tags: ['🎉 お祝い', '☕ 雑談', '💌 告白', '👭 友達']
       },
       'en': {
         title: 'Chibi Guestbook', subtitle: 'Leave a sweet & cute message here!',
@@ -296,7 +315,8 @@
         submitBtn: 'Send Message 🚀', submitting: '⏳ Sending...',
         sectionTitle: '✨ Message Board ✨', loading: 'Loading... 🐾',
         empty: 'No messages yet! 🐣', error: '❌ Error loading!', refresh: 'Refresh',
-        search: '🔍 Search messages...', labelTag: '🏷️ Category:', labelTheme: '🎨 Card Theme:'
+        search: '🔍 Search messages...', labelTag: '🏷️ Category:', labelTheme: '🎨 Card Theme:',
+        tags: ['🎉 Wishes', '☕ Talk', '💌 Love', '👭 Friends']
       }
     };
 
@@ -317,7 +337,17 @@
       document.getElementById('searchInput').placeholder = t.search;
       document.getElementById('ui-label-tag').innerText = t.labelTag;
       document.getElementById('ui-label-theme').innerText = t.labelTheme;
-      renderMessages(allMessages);
+      
+      // Đổi ngôn ngữ cho các Option trong thẻ Tag
+      for(let i = 0; i < 4; i++) {
+        const opt = document.getElementById(`opt-tag-${i+1}`);
+        if(opt) {
+          opt.value = t.tags[i];
+          opt.innerText = t.tags[i];
+        }
+      }
+
+      filterMessages();
     }
 
     function addEmoji(emoji) {
@@ -336,23 +366,26 @@
       return avatars[hash % avatars.length];
     }
 
-    // Tải danh sách
+    // Tải danh sách - Tự giữ lại kết quả tìm kiếm nếu đang tìm
     async function loadMessages() {
       const listDiv = document.getElementById("list");
       const t = i18n[currentLang] || i18n['vi'];
-      listDiv.innerHTML = `<div class="status-msg">${t.loading}</div>`;
+      
+      // Nếu không có tìm kiếm thì mới hiện trạng thái loading
+      if (!document.getElementById('searchInput').value.trim()) {
+        listDiv.innerHTML = `<div class="status-msg">${t.loading}</div>`;
+      }
 
       try {
         const res = await fetch(GAS_URL);
         const data = await res.json();
         allMessages = data || [];
-        renderMessages(allMessages);
+        filterMessages(); // Giữ nguyên bộ lọc sau khi làm mới
       } catch (e) {
         listDiv.innerHTML = `<div class="status-msg" style="color: #e03131;">${t.error}</div>`;
       }
     }
 
-    // Hiển thị tin nhắn
     function renderMessages(data) {
       const listDiv = document.getElementById("list");
       const t = i18n[currentLang] || i18n['vi'];
@@ -383,22 +416,26 @@
       }).join('');
     }
 
-    // Tìm kiếm tin nhắn
+    // Lọc tin nhắn từ danh sách gốc
     function filterMessages() {
-      const q = document.getElementById('searchInput').value.toLowerCase();
+      const q = document.getElementById('searchInput').value.toLowerCase().trim();
+      if (!q) {
+        renderMessages(allMessages);
+        return;
+      }
       const filtered = allMessages.filter(m => 
-        m.name.toLowerCase().includes(q) || m.message.toLowerCase().includes(q)
+        (m.name && m.name.toLowerCase().includes(q)) || 
+        (m.message && m.message.toLowerCase().includes(q)) ||
+        (m.tag && m.tag.toLowerCase().includes(q))
       );
       renderMessages(filtered);
     }
 
-    // Thả tim tương tác
     function addLike(idx) {
       likesData[idx] = (likesData[idx] || 0) + 1;
-      renderMessages(allMessages);
+      filterMessages();
     }
 
-    // Gửi tin nhắn + Pháo hoa
     document.getElementById("msgForm").addEventListener("submit", async function(e) {
       e.preventDefault();
       const btn = document.getElementById("submitBtn");
@@ -419,7 +456,6 @@
           body: JSON.stringify({ name, message, tag, theme: selectedTheme })
         });
 
-        // Bắn pháo hoa Confetti khi gửi thành công
         confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
 
         document.getElementById("name").value = "";
