@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Q版可愛留言板 💛</title>
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-yellow: #fff9db;
+      --card-bg: #ffffff;
+      --accent-yellow: #ffe066;
+      --primary-orange: #ff922b;
+      --text-color: #5c4813;
+      --border-color: #ffe08a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans TC', 'Comfortaa', sans-serif;
+      background-color: var(--bg-yellow);
+      background-image: radial-gradient(#fcc419 1.5px, transparent 1.5px), radial-gradient(#fcc419 1.5px, #fff9db 1.5px);
+      background-size: 60px 60px;
+      background-position: 0 0, 30px 30px;
+      min-height: 100vh;
+      color: var(--text-color);
+      padding: 20px 15px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container { width: 100%; max-width: 500px; }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .lang-switcher select {
+      padding: 6px 10px;
+      border-radius: 12px;
+      border: 2px solid var(--border-color);
+      background: #fff;
+      font-weight: bold;
+      color: var(--text-color);
+      cursor: pointer;
+    }
+
+    /* Tính năng 4: Nút làm mới */
+    .refresh-btn {
+      background: #fff;
+      border: 2px solid var(--border-color);
+      padding: 6px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: bold;
+      color: var(--text-color);
+      transition: all 0.2s;
+    }
+    .refresh-btn:hover { background: var(--accent-yellow); }
+
+    .header-box { text-align: center; margin-bottom: 20px; }
+    .chibi-avatar { font-size: 60px; display: inline-block; animation: bounce 2s infinite; }
+    .header-box h1 { font-size: 1.8rem; font-weight: 900; color: #e67700; text-shadow: 2px 2px 0px #fff; }
+    .header-box p { font-size: 0.95rem; color: #997404; font-weight: 700; }
+
+    .form-card {
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 25px;
+      box-shadow: 0 8px 0px #fcc419, 0 15px 20px rgba(0,0,0,0.05);
+      border: 3px solid #ffe066;
+      margin-bottom: 25px;
+    }
+
+    .form-group { margin-bottom: 12px; }
+    label { display: block; font-size: 0.95rem; font-weight: 900; color: #d97706; margin-bottom: 6px; }
+
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid var(--border-color);
+      border-radius: 16px;
+      font-size: 0.95rem;
+      background: #fffbeb;
+      color: var(--text-color);
+      font-family: inherit;
+    }
+
+    /* Tính năng 1: Emoji Picker Bar */
+    .emoji-bar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .emoji-btn {
+      background: #fff3bf;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 4px 8px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: transform 0.1s;
+    }
+    .emoji-btn:hover { transform: scale(1.2); }
+
+    button.submit-btn {
+      width: 100%;
+      background: #f59f00;
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 20px;
+      font-size: 1.1rem;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 5px 0px #d97706;
+      transition: all 0.1s;
+      margin-top: 8px;
+    }
+    button.submit-btn:hover { background: #ff922b; transform: translateY(-2px); }
+    button.submit-btn:disabled { background: #cbd5e1; box-shadow: 0 5px 0px #94a3b8; cursor: not-allowed; transform: none; }
+
+    .section-title { font-size: 1.2rem; font-weight: 900; color: #d97706; margin-bottom: 15px; text-align: center; }
+
+    .msg-card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 15px;
+      border: 2px solid #ffec99;
+      box-shadow: 0 5px 0px #ffe066;
+    }
+    .msg-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .msg-author { font-weight: 900; color: #e67700; font-size: 1rem; }
+    .msg-time { font-size: 0.75rem; color: #b45309; background: #fff3bf; padding: 3px 8px; border-radius: 10px; font-weight: 700; }
+    .msg-content { color: #614802; font-size: 0.95rem; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+    .status-msg { text-align: center; color: #b45309; padding: 20px; font-weight: 700; }
+
+    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="top-bar">
+      <div class="lang-switcher">
+        <select id="langSelect" onchange="changeLanguage(this.value)">
+          <option value="vi">Tiếng Việt</option>
+          <option value="zh-TW">繁體中文</option>
+          <option value="zh-CN">简体中文</option>
+          <option value="en">English</option>
+          <option value="ja">日本語</option>
+        </select>
+      </div>
+      <!-- Tính năng 4: Nút làm mới -->
+      <button class="refresh-btn" onclick="loadMessages()">🔄 <span id="ui-refresh">Làm mới</span></button>
+    </div>
+
+    <div class="header-box">
+      <div class="chibi-avatar">🐥✨</div>
+      <h1 id="ui-title">Lưu Bút Chibi</h1>
+      <p id="ui-subtitle">Gửi lại lời nhắn ngọt ngào cho tớ nhé!</p>
+    </div>
+
+    <div class="form-card">
+      <form id="msgForm">
+        <div class="form-group">
+          <label for="name" id="ui-label-name">🐱 Tên của bạn:</label>
+          <input type="text" id="name" required placeholder="Nhập biệt danh cute...">
+        </div>
+        <div class="form-group">
+          <label for="message" id="ui-label-msg">💌 Lời nhắn gửi:</label>
+          
+          <!-- Tính năng 1: Emoji Bar -->
+          <div class="emoji-bar">
+            <span class="emoji-btn" onclick="addEmoji('❤️')">❤️</span>
+            <span class="emoji-btn" onclick="addEmoji('✨')">✨</span>
+            <span class="emoji-btn" onclick="addEmoji('🌸')">🌸</span>
+            <span class="emoji-btn" onclick="addEmoji('🐱')">🐱</span>
+            <span class="emoji-btn" onclick="addEmoji('🧸')">🧸</span>
+            <span class="emoji-btn" onclick="addEmoji('🎉')">🎉</span>
+          </div>
+
+          <textarea id="message" rows="3" required placeholder="Viết gì đó dễ thương..."></textarea>
+        </div>
+        <button type="submit" id="submitBtn" class="submit-btn">Gửi Đi Ngay 🚀</button>
+      </form>
+    </div>
+
+    <div class="section-title" id="ui-section-title">✨ Danh Sách Lời Nhắn ✨</div>
+    <div id="list"><div class="status-msg" id="ui-loading">Đang tải tin nhắn... 🐾</div></div>
+  </div>
+
+  <script>
+    // ⚠️ Nhớ thay URL này bằng URL Google Apps Script của bạn
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzLcKAOEPWXfpnUt_3igLdqISkb0hCNgnI7hyXXVNLxqUoSmW90L2dlgS4jgohQ0yw_QQ/exec";
+
+    // Tính năng 5: Danh sách avatar con vật ngẫu nhiên
+    const avatars = ["🐱", "🐶", "🐰", "🦊", "🐻", "🐼", "🐨", "🐥"];
+
+    const i18n = {
+      'vi': {
+        title: 'Lưu Bút Chibi Cute', subtitle: 'Gửi lại lời nhắn ngọt ngào cho tớ nhé!',
+        labelName: '🐱 Tên của bạn:', placeholderName: 'Nhập biệt danh cute...',
+        labelMsg: '💌 Lời nhắn gửi:', placeholderMsg: 'Viết gì đó dễ thương...',
+        submitBtn: 'Gửi Đi Ngay 🚀', submitting: '⏳ Đang Gửi Tin...',
+        sectionTitle: '✨ Danh Sách Lời Nhắn ✨', loading: 'Đang tải tin nhắn... 🐾',
+        empty: 'Chưa có lời nhắn nào cả! 🐣', error: '❌ Lỗi tải dữ liệu!', refresh: 'Làm mới'
+      },
+      'zh-TW': {
+        title: 'Q版可愛留言板', subtitle: '留下你溫馨可愛的留言吧！',
+        labelName: '🐱 你的暱稱：', placeholderName: '請輸入超萌暱稱...',
+        labelMsg: '💌 留言內容：', placeholderMsg: '寫點可愛的話吧...',
+        submitBtn: '立即送出 🚀', submitting: '⏳ 傳送中...',
+        sectionTitle: '✨ 歷史留言區 ✨', loading: '留言載入中... 🐾',
+        empty: '目前還沒有留言！ 🐣', error: '❌ 讀取失敗！', refresh: '重新整理'
+      },
+      'zh-CN': {
+        title: 'Q版可爱留言板', subtitle: '留下你温馨可爱的留言吧！',
+        labelName: '🐱 你的昵称：', placeholderName: '请输入萌萌的昵称...',
+        labelMsg: '💌 留言内容：', placeholderMsg: '写点可爱的话吧...',
+        submitBtn: '立即发送 🚀', submitting: '⏳ 发送中...',
+        sectionTitle: '✨ 历史留言区 ✨', loading: '留言加载中... 🐾',
+        empty: '目前还没有留言！ 🐣', error: '❌ 读取失败！', refresh: '刷新'
+      },
+      'en': {
+        title: 'Chibi Guestbook', subtitle: 'Leave a sweet & cute message here!',
+        labelName: '🐱 Your Name:', placeholderName: 'Enter nickname...',
+        labelMsg: '💌 Message:', placeholderMsg: 'Write something cute...',
+        submitBtn: 'Send Message 🚀', submitting: '⏳ Sending...',
+        sectionTitle: '✨ Message Board ✨', loading: 'Loading... 🐾',
+        empty: 'No messages yet! 🐣', error: '❌ Error loading!', refresh: 'Refresh'
+      },
+      'ja': {
+        title: 'ちび一言掲示板', subtitle: 'メッセージを残していってね！',
+        labelName: '🐱 お名前：', placeholderName: '名前を入力...',
+        labelMsg: '💌 メッセージ：', placeholderMsg: '書いてね...',
+        submitBtn: '送信する 🚀', submitting: '⏳ 送信中...',
+        sectionTitle: '✨ メッセージ一覧 ✨', loading: '読み込み中... 🐾',
+        empty: 'まだメッセージがありません！ 🐣', error: '❌ エラーが発生しました！', refresh: '更新'
+      }
+    };
+
+    let currentLang = 'vi';
+
+    function changeLanguage(lang) {
+      currentLang = lang;
+      const t = i18n[lang];
+      document.getElementById('ui-title').innerText = t.title;
+      document.getElementById('ui-subtitle').innerText = t.subtitle;
+      document.getElementById('ui-label-name').innerText = t.labelName;
+      document.getElementById('name').placeholder = t.placeholderName;
+      document.getElementById('ui-label-msg').innerText = t.labelMsg;
+      document.getElementById('message').placeholder = t.placeholderMsg;
+      document.getElementById('submitBtn').innerText = t.submitBtn;
+      document.getElementById('ui-section-title').innerText = t.sectionTitle;
+      document.getElementById('ui-refresh').innerText = t.refresh;
+      loadMessages();
+    }
+
+    // Tính năng 1: Thêm Emoji vào khung nhập tin nhắn
+    function addEmoji(emoji) {
+      const msgInput = document.getElementById('message');
+      msgInput.value += emoji;
+    }
+
+    // Tính năng 5: Tự chọn Avatar dựa theo tên
+    function getAvatar(name) {
+      let hash = 0;
+      for (let i = 0; i < name.length; i++) hash += name.charCodeAt(i);
+      return avatars[hash % avatars.length];
+    }
+
+    // Tính năng 4: Tải lại tin nhắn khi bấm nút
+    async function loadMessages() {
+      const listDiv = document.getElementById("list");
+      const t = i18n[currentLang];
+      listDiv.innerHTML = `<div class="status-msg">${t.loading}</div>`;
+
+      try {
+        const res = await fetch(GAS_URL);
+        const data = await res.json();
+        
+        if (!data || !data.length) {
+          listDiv.innerHTML = `<div class="status-msg">${t.empty}</div>`;
+          return;
+        }
+
+        listDiv.innerHTML = data.map(item => `
+          <div class="msg-card">
+            <div class="msg-header">
+              <span class="msg-author">${getAvatar(item.name)} ${escapeHtml(item.name)}</span>
+              <span class="msg-time">${item.time}</span>
+            </div>
+            <div class="msg-content">${escapeHtml(item.message)}</div>
+          </div>
+        `).join('');
+      } catch (e) {
+        listDiv.innerHTML = `<div class="status-msg" style="color: #e03131;">${t.error}</div>`;
+      }
+    }
+
+    document.getElementById("msgForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById("submitBtn");
+      const name = document.getElementById("name").value.trim();
+      const message = document.getElementById("message").value.trim();
+      const t = i18n[currentLang];
+
+      if(!name || !message) return;
+
+      btn.disabled = true;
+      btn.innerText = t.submitting;
+
+      try {
+        await fetch(GAS_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ name, message })
+        });
+        document.getElementById("name").value = "";
+        document.getElementById("message").value = "";
+        loadMessages();
+      } catch (e) {
+        alert("Thất bại!");
+      } finally {
+        btn.disabled = false;
+        btn.innerText = t.submitBtn;
+      }
+    });
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+    }
+
+    loadMessages();
+  </script>
+</body>
+</html>
